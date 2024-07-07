@@ -1,0 +1,72 @@
+{% extends "layout.html" %}
+
+{% block title %}PlanWeb - Login{% endblock %}
+
+{% block content %}
+<div class="container login-container">
+    <div class="card shadow">
+        <div class="card-body">
+            <!-- Login Form -->
+            <form id="loginForm" action="/login" method="post">
+                <h2 class="card-title text-center mb-4">Login</h2>
+                <div class="mb-3">
+                    <label for="loginUsername" class="form-label">Username</label>
+                    <input type="text" class="form-control" id="loginUsername" name="username" placeholder="Enter your username" required>
+                </div>
+                <div class="mb-3">
+                    <label for="loginPassword" class="form-label">Password</label>
+                    <input type="password" class="form-control" id="loginPassword" name="password" placeholder="Enter your password" required>
+                </div>
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-primary">Login</button>
+                </div>
+                <p class="text-center mt-3">
+                    Don't have an account? <a href="#" onclick="toggleForm('register')">Register here</a>
+                </p>
+            </form>
+
+            <!-- Register Form -->
+            <form id="registerForm" action="/register" method="post" style="display:none;">
+                <h2 class="card-title text-center mb-4">Register</h2>
+                <div class="mb-3">
+                    <label for="registerUsername" class="form-label">Username</label>
+                    <input type="text" class="form-control" id="registerUsername" name="username" placeholder="Choose a username" required>
+                </div>
+                <div class="mb-3">
+                    <label for="registerEmail" class="form-label">Email</label>
+                    <input type="email" class="form-control" id="registerEmail" name="email" placeholder="Enter your email" required>
+                </div>
+                <div class="mb-3">
+                    <label for="registerPassword" class="form-label">Password</label>
+                    <input type="password" class="form-control" id="registerPassword" name="password" placeholder="Choose a password" required>
+                </div>
+                <div class="mb-3">
+                    <label for="confirmPassword" class="form-label">Confirm Password</label>
+                    <input type="password" class="form-control" id="confirmPassword" name="confirm_password" placeholder="Confirm your password" required>
+                </div>
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-primary">Register</button>
+                </div>
+                <p class="text-center mt-3">
+                    Already have an account? <a href="#" onclick="toggleForm('login')">Login here</a>
+                </p>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    function toggleForm(formType) {
+        const loginForm = document.getElementById('loginForm');
+        const registerForm = document.getElementById('registerForm');
+        
+        if (formType === 'login') {
+            loginForm.style.display = 'block';
+            registerForm.style.display = 'none';
+        } else {
+            loginForm.style.display = 'none';
+            registerForm.style.display = 'block';
+        }
+    }
+</script>
+{% endblock %}

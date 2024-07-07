@@ -1,0 +1,35 @@
+
+{% extends "layout.html" %}
+
+{% block title %}PlantWeb - Album{% endblock %}
+{% block content %}
+{% block content %}
+<div class="container">
+    <h1 class="text-center mb-4">My Plants</h1>
+    
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+        {% for plant in plants %}
+        <div class="col">
+            <div class="card h-100">
+                {% if plant.photo %}
+                <img src="data:image/jpeg;base64,{{ plant.photo }}" class="card-img-top" alt="{{ plant.name }}">
+                {% else %}
+                <img src="{{ url_for('static', filename='default_plant.jpg') }}" class="card-img-top" alt="Default Plant Image">
+                {% endif %}
+                <div class="card-body">
+                    <h5 class="card-title">{{ plant.name }}</h5>
+                    <p class="card-text">Room: {{ plant.room or 'Not specified' }}</p>
+                    <p class="card-text">Added: {{ plant.added }}</p>
+                    <p class="card-text">Last Watered: {{ plant.watered or 'Not yet watered' }}</p>
+                    <p class="card-text">Next Watering: {{ plant.next_watering or 'Water now' }}</p>
+                </div>
+                <div class="card-footer">
+                    <a href="{{ url_for('water_plant', plant_id=plant.id_plant) }}" class="btn btn-primary">Water Now</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
+{% endblock %}
