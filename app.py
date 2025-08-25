@@ -1,4 +1,4 @@
-from flask import Flask, redirect, render_template, session, request
+from flask import Flask, redirect, render_template, session, request, url_for
 from functools import wraps
 from flask_session import Session
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -17,10 +17,11 @@ def login_required(f):
     """
     Decorate routes to require login.
     """
+def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if session.get("user_id") is None:
-            return redirect("login")
+            return redirect(url_for("login"))
         return f(*args, **kwargs)
     return decorated_function
 
@@ -83,9 +84,26 @@ def register():
                 return render_template("login.html", error="Username already exists")
     return render_template("login.html")
 
-@app.route('/add_plant')
+@app.route("/add_plant", methods=["GET", "POST"])
+@login_required
 def add_plant():
-    return render_template('add_plant.html')
+    if request.method == "POST":
+        name = request.form.get("name", "").strip()
+        room = request.form.get("room", "").strip()
+        added = request.form.get("added")  # YYYY-MM-DD
+        winterval = int(request.form.get("winterval", 7))
+        file = request.files.get("photo")
+        photo_bytes = file.read() if file and file.filename else None
+
+        con = get_db_connection()
+        con.execute(
+            "INSERT INTO Plants (user_id, name, room, added, winterval, photo) VALUES (?, ?, ?, ?, ?, ?)",
+            (session["user_id"], name, room, added, winterval, photo_bytes),
+        )
+        con.commit()
+        con.close()
+        return redirect(url_for("my_plants"))
+    return render_template("add_plant.html")
 
 @app.route('/album')
 @login_required

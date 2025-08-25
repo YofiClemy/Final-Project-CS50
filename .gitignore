@@ -1,0 +1,8 @@
+# .gitignore
+__pycache__/
+*.pyc
+.DS_Store
+.env
+*.db
+instance/
+flask_session/
