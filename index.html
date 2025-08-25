@@ -8,7 +8,7 @@
   <meta property="og:title" content="PlantWeb | CS50 Final Project" />
   <meta property="og:description" content="Track plant waterings with login, photos, and next-watering logic." />
   <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://github.com/YofiClemy/Final-Project-CS50" />
+  <meta property="og:url" content="https://<your-username>.github.io/<your-repo>/" />
   <meta name="theme-color" content="#00a4a4" />
   <style>
     :root{
@@ -55,6 +55,15 @@
     footer{max-width:1024px;margin:12px auto 40px;padding:0 20px;color:var(--muted)}
     .bad{color:var(--bad)} .warn{color:var(--warn)} .good{color:var(--good)}
     @media (max-width:860px){.hero{grid-template-columns:1fr}}
+
+    /* Accessibility: ensure anchor-buttons are readable on dark backgrounds */
+    a.btn, a.btn:link, a.btn:visited { color: #ffffff !important; text-decoration: none; }
+    a.btn:hover, a.btn:focus { filter: brightness(1.08); text-decoration: none; }
+    a.btn:focus-visible { outline: 2px solid #ffffff; outline-offset: 2px; }
+
+    /* High-contrast GitHub button variant */
+    .btn.github { background: #000000; color: #ffffff !important; border-color: #2b2b2b; }
+    .btn.github:hover { filter: none; background: #111111; }
   </style>
 </head>
 <body>
@@ -67,7 +76,7 @@
       <div>
         <a class="btn secondary" href="#features">Features</a>
         <a class="btn secondary" href="#install">Run locally</a>
-        <a class="btn" href="https://github.com/YofiClemy/Final-Project-CS50" target="_blank" rel="noopener">View on GitHub</a>
+        <a class="btn github" href="https://github.com/<your-username>/<your-repo>" target="_blank" rel="noopener">View on GitHub</a>
       </div>
     </nav>
   </header>

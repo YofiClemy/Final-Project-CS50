@@ -20,7 +20,7 @@ app.config["SESSION_FILE_DIR"] = os.path.join(app.instance_path, "flask_session"
 os.makedirs(app.config["SESSION_FILE_DIR"], exist_ok=True)
 Session(app)
 
-DB_PATH = os.environ.get("DATABASE_FILE", "database.db")
+DB_PATH = os.environ.get("DATABASE_FILE") or os.path.join(app.instance_path, "database.db")
 
 # --- DB helpers (single source of truth) ---
 def get_db():
@@ -30,6 +30,44 @@ def get_db():
         g.db.row_factory = sqlite3.Row
         g.db.execute("PRAGMA foreign_keys = ON")
     return g.db
+
+SCHEMA_PATH = os.path.join(app.root_path, "schema.sql")
+
+def ensure_schema():
+    db = get_db()
+    exists = db.execute(
+        "SELECT 1 FROM sqlite_master WHERE type='table' AND name='Users'"
+    ).fetchone()
+    if not exists:
+        # load schema from file (fallback to inline if missing)
+        if os.path.exists(SCHEMA_PATH):
+            with open(SCHEMA_PATH, encoding="utf-8") as f:
+                db.executescript(f.read())
+        else:
+            db.executescript("""
+            PRAGMA foreign_keys = ON;
+            CREATE TABLE IF NOT EXISTS Users(
+              user_id INTEGER PRIMARY KEY,
+              username TEXT NOT NULL UNIQUE COLLATE NOCASE,
+              hashed_password TEXT NOT NULL
+            );
+            CREATE TABLE IF NOT EXISTS Plants(
+              id_plant INTEGER PRIMARY KEY,
+              user_id INTEGER NOT NULL,
+              name TEXT NOT NULL,
+              room TEXT,
+              added TEXT NOT NULL,
+              watered TEXT,
+              winterval INTEGER NOT NULL DEFAULT 7 CHECK (winterval > 0),
+              photo BLOB,
+              FOREIGN KEY (user_id) REFERENCES Users(user_id)
+            );
+            """)
+        db.commit()
+
+@app.before_first_request
+def _init_db():
+    ensure_schema()
 
 @app.teardown_appcontext
 def close_db(exc):
