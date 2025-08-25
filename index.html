@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>PlantWeb | CS50 Final Project</title>
+  <meta name="description" content="PlantWeb helps you track houseplants and never miss a watering. CS50 final project by Clément Chevauchey." />
+  <meta property="og:title" content="PlantWeb | CS50 Final Project" />
+  <meta property="og:description" content="Track plant waterings with login, photos, and next-watering logic." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://github.com/YofiClemy/Final-Project-CS50" />
+  <meta name="theme-color" content="#00a4a4" />
+  <style>
+    :root{
+      --bg: #0f1115;
+      --bg2:#151821;
+      --fg: #e9eef3;
+      --muted:#b7c2cc;
+      --brand:#00a4a4;
+      --card:#171b24;
+      --edge:#222836;
+      --link:#8ad9d9;
+      --warn:#d4a017;
+      --bad:#d65c5c;
+      --good:#3fa77b;
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0;background:var(--bg);color:var(--fg);font:16px/1.6 system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,"Helvetica Neue",Arial}
+    a{color:var(--link);text-decoration:none}
+    a:hover{text-decoration:underline}
+    header{position:sticky;top:0;z-index:10;background:linear-gradient(180deg,var(--bg) 0%,rgba(15,17,21,.96) 70%,rgba(15,17,21,0) 100%);backdrop-filter:saturate(160%) blur(8px);border-bottom:1px solid rgba(255,255,255,.06)}
+    .nav{max-width:1024px;margin:0 auto;display:flex;gap:16px;align-items:center;justify-content:space-between;padding:12px 20px}
+    .brand{display:flex;gap:10px;align-items:center;color:#fff;text-decoration:none}
+    .brand-logo{width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,var(--brand),#007474)}
+    .brand-title{font-weight:700;letter-spacing:.2px}
+    .nav a.btn{padding:8px 12px;border:1px solid var(--edge);border-radius:10px;background:var(--bg2)}
+    .hero{max-width:1024px;margin:34px auto 0;padding:24px 20px 10px;display:grid;grid-template-columns:1.4fr 1fr;gap:28px}
+    .hero h1{margin:.2rem 0 1rem;font-size:clamp(28px,4vw,40px);line-height:1.15}
+    .hero p{margin:0;color:var(--muted)}
+    .cta{display:flex;gap:12px;flex-wrap:wrap;margin-top:16px}
+    .btn{display:inline-block;padding:10px 14px;border-radius:12px;border:1px solid var(--edge);background:var(--brand);color:#061013;font-weight:700}
+    .btn.secondary{background:var(--bg2);color:var(--fg)}
+    .grid{max-width:1024px;margin:0 auto;padding:20px}
+    .section{margin:28px 0;padding:18px;border:1px solid var(--edge);border-radius:16px;background:var(--card)}
+    .section h2{margin:.2rem 0 1rem;font-size:clamp(22px,3vw,28px)}
+    .features{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+    .card{padding:14px;border:1px solid var(--edge);border-radius:12px;background:var(--bg2)}
+    .kpi{display:inline-block;padding:2px 8px;border-radius:999px;background:#0d131a;border:1px solid var(--edge);color:var(--muted);font-size:.85rem}
+    pre{margin:0;background:#0d131a;border:1px solid var(--edge);border-radius:12px;overflow:auto}
+    code{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;font-size:.92rem}
+    .code{padding:14px}
+    .gallery{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+    .shot{border:1px solid var(--edge);border-radius:12px;overflow:hidden;background:#0d131a}
+    .shot img{display:block;width:100%;height:auto}
+    footer{max-width:1024px;margin:12px auto 40px;padding:0 20px;color:var(--muted)}
+    .bad{color:var(--bad)} .warn{color:var(--warn)} .good{color:var(--good)}
+    @media (max-width:860px){.hero{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <header>
+    <nav class="nav">
+      <a class="brand" href="#">
+        <span class="brand-logo" aria-hidden="true"></span>
+        <span class="brand-title">PlantWeb</span>
+      </a>
+      <div>
+        <a class="btn secondary" href="#features">Features</a>
+        <a class="btn secondary" href="#install">Run locally</a>
+        <a class="btn" href="https://github.com/YofiClemy/Final-Project-CS50" target="_blank" rel="noopener">View on GitHub</a>
+      </div>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div>
+        <h1>Never forget to water your plants again</h1>
+        <p>Track plants, compute next watering dates automatically, and attach photos for growth history. Built with Flask and SQLite as a CS50 final project.</p>
+        <div class="cta">
+          <a class="btn" href="#demo">Live demo</a>
+          <a class="btn secondary" href="#install">Install</a>
+        </div>
+        <p style="margin-top:12px"><span class="kpi">Auth</span> <span class="kpi">Image uploads</span> <span class="kpi">Server-side sessions</span></p>
+      </div>
+      <div class="shot" aria-label="App screenshot placeholder">
+        <!-- Replace with your actual screenshot -->
+        <img src="assets/screenshot-hero.jpg" alt="PlantWeb dashboard" />
+      </div>
+    </section>
+
+    <div class="grid">
+      <section id="features" class="section">
+        <h2>Features</h2>
+        <div class="features">
+          <div class="card">
+            <strong>Login & Register</strong>
+            <p>Create an account, hashed passwords, session-based auth.</p>
+          </div>
+          <div class="card">
+            <strong>Plant album</strong>
+            <p>Store name, room, dates, interval, and optional photo per plant.</p>
+          </div>
+          <div class="card">
+            <strong>Next watering logic</strong>
+            <p>Due dates computed from last watering or added date. Badges show status.</p>
+          </div>
+          <div class="card">
+            <strong>Simple deployment</strong>
+            <p>Works locally with Flask. Can be containerized or deployed to a PaaS.</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="demo" class="section">
+        <h2>Demo</h2>
+        <p>Video walkthrough: <a href="https://youtu.be/<your-video-id>" target="_blank" rel="noopener">YouTube link</a></p>
+        <!-- Or embed:
+        <div class="shot">
+          <iframe width="100%" height="360" src="https://www.youtube.com/embed/<your-video-id>" title="PlantWeb demo" frameborder="0" allowfullscreen></iframe>
+        </div>
+        -->
+      </section>
+
+      <section id="install" class="section">
+        <h2>Run locally</h2>
+        <div class="card">
+          <div class="code">
+            <pre><code># 1) Create and activate a virtualenv
+python3 -m venv .venv
+source .venv/bin/activate  # Windows: .venv\Scripts\activate
+
+# 2) Install dependencies
+pip install -r requirements.txt
+
+# 3) Initialize the SQLite database
+sqlite3 database.db &lt; schema.sql
+
+# 4) Run
+export SECRET_KEY="change-me"
+flask --app app run  # http://127.0.0.1:5000
+</code></pre>
+          </div>
+        </div>
+        <p class="warn" style="margin-top:10px">Tip: keep <code>database.db</code> and <code>flask_session/</code> out of git. Add them to <code>.gitignore</code>.</p>
+      </section>
+
+      <section id="screens" class="section">
+        <h2>Screenshots</h2>
+        <div class="gallery">
+          <div class="shot"><img src="assets/login.jpg" alt="Login page" /></div>
+          <div class="shot"><img src="assets/album.jpg" alt="Album view" /></div>
+          <div class="shot"><img src="assets/add.jpg" alt="Add plant form" /></div>
+        </div>
+      </section>
+
+      <section id="tech" class="section">
+        <h2>Tech stack</h2>
+        <ul>
+          <li>Python Flask, Jinja templates</li>
+          <li>SQLite with server-side sessions</li>
+          <li>Plain CSS, no heavy frameworks</li>
+        </ul>
+      </section>
+
+      <section id="about" class="section">
+        <h2>About</h2>
+        <p>CS50x final project by <strong>Clément Chevauchey</strong>. Source available on GitHub.</p>
+        <p>Feedback and issues welcome via the repository’s Issues tab.</p>
+      </section>
+    </div>
+  </main>
+
+  <footer>
+    <hr style="border:0;border-top:1px solid var(--edge)" />
+    <p>© <span id="y"></span> PlantWeb. MIT License.</p>
+  </footer>
+
+  <script>
+    // tiny year updater
+    document.getElementById('y').textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>
