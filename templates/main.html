@@ -1,56 +1,54 @@
-
 {% extends "layout.html" %}
-
 {% block title %}PlantWeb{% endblock %}
 {% block content %}
 <div class="row justify-content-center">
-    <div class="col-md-8">
-        <h1 class="text-center mb-4">Welcome to PlantWeb</h1>
-        <p class="lead text-center mb-5">Manage your plants and never forget to water them again!</p>
-        
-        <div class="row">
-            <div class="col-md-6 mb-4">
-                <div class="card h-100">
-                    <div class="card-body text-center">
-                        <i class="bi bi-flower1 fs-1 text-primary mb-3"></i>
-                        <h5 class="card-title">Register Your Plants</h5>
-                        <p class="card-text">Add your plants to your personal collection and keep track of their needs.</p>
-                        <a href="{{ url_for('add_plant') }}" class="btn btn-primary">Add a Plant</a>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-6 mb-4">
-                <div class="card h-100">
-                    <div class="card-body text-center">
-                        <i class="bi bi-droplet fs-1 text-primary mb-3"></i>
-                        <h5 class="card-title">Watering Schedule</h5>
-                        <p class="card-text">Set up and manage watering schedules for all your plants.</p>
-                        <a href="{{ url_for('album') }}" class="btn btn-primary">View Schedule</a>
-                    </div>
-                </div>
-            </div>
-        </div>
+  <div class="col-md-8">
+    <h1 class="text-center mb-4">Welcome to PlantWeb</h1>
+    <p class="lead text-center mb-5">Manage your plants and never forget to water them again!</p>
 
-        <div class="text-center mt-5">
-            <h2 class="mb-4">Why Choose Plantnet?</h2>
-            <div class="row">
-                <div class="col-md-4 mb-3">
-                    <i class="bi bi-calendar-check fs-2 text-primary mb-2"></i>
-                    <h5>Easy Scheduling</h5>
-                    <p>Set reminders and never forget to water your plants.</p>
-                </div>
-                <div class="col-md-4 mb-3">
-                    <i class="bi bi-info-circle fs-2 text-primary mb-2"></i>
-                    <h5>Plant Notes</h5>
-                    <p>Access your previous notes and informations about all your plants.</p>
-                </div>
-                <div class="col-md-4 mb-3">
-                    <i class="bi bi-graph-up fs-2 text-primary mb-2"></i>
-                    <h5>Growth Tracking</h5>
-                    <p>Monitor your plants' growth and health over time with picture comparison.</p>
-                </div>
-            </div>
+    <div class="row">
+      <div class="col-md-6 mb-4">
+        <div class="card h-100">
+          <div class="card-body text-center">
+            <i class="bi bi-flower1 fs-1 text-primary mb-3"></i>
+            <h5 class="card-title">Register Your Plants</h5>
+            <p class="card-text">Add your plants to your personal collection and keep track of their needs.</p>
+            <a href="{{ url_for('add_plant') }}" class="btn btn-primary">Add a Plant</a>
+          </div>
         </div>
+      </div>
+      <div class="col-md-6 mb-4">
+        <div class="card h-100">
+          <div class="card-body text-center">
+            <i class="bi bi-droplet fs-1 text-primary mb-3"></i>
+            <h5 class="card-title">Watering Schedule</h5>
+            <p class="card-text">Set up and manage watering schedules for all your plants.</p>
+            <a href="{{ url_for('my_plants') }}" class="btn btn-primary">View Schedule</a>
+          </div>
+        </div>
+      </div>
     </div>
+
+    <div class="text-center mt-5">
+      <h2 class="mb-4">Why Choose PlantWeb?</h2>
+      <div class="row">
+        <div class="col-md-4 mb-3">
+          <i class="bi bi-calendar-check fs-2 text-primary mb-2"></i>
+          <h5>Easy Scheduling</h5>
+          <p>Set reminders and never forget to water your plants.</p>
+        </div>
+        <div class="col-md-4 mb-3">
+          <i class="bi bi-info-circle fs-2 text-primary mb-2"></i>
+          <h5>Plant Notes</h5>
+          <p>Access your notes and info about all your plants.</p>
+        </div>
+        <div class="col-md-4 mb-3">
+          <i class="bi bi-graph-up fs-2 text-primary mb-2"></i>
+          <h5>Growth Tracking</h5>
+          <p>Monitor growth and health over time with photo comparison.</p>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 {% endblock %}

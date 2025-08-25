@@ -1,0 +1,20 @@
+{% if error %}
+<div class="alert alert-danger">{{ error }}</div>
+{% endif %}
+<form method="post" enctype="multipart/form-data">
+  <input name="name" required placeholder="Name">
+  <input name="room" placeholder="Room">
+  <input type="date" name="added">
+  <input type="number" name="winterval" min="1" value="7">
+  <input type="file" name="photo" accept="image/*">
+  <button type="submit">Save</button>
+</form>
+
+<form method="post" enctype="multipart/form-data">
+  <input name="name" required placeholder="Name">
+  <input name="room" placeholder="Room">
+  <input type="date" name="added">
+  <input type="number" name="winterval" min="1" value="7">
+  <input type="file" name="photo" accept="image/*">
+  <button type="submit">Save</button>
+</form>
