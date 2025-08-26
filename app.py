@@ -92,41 +92,49 @@ def _column_exists(con, table: str, column: str) -> bool:
     return column in cols
 
 def ensure_schema_bootstrap():
-    """Create tables and run tiny migrations at import time (Flask 3 safe)."""
     con = sqlite3.connect(DB_PATH)
     try:
         con.execute("PRAGMA foreign_keys = ON")
 
+        # --- Users ---
         if not _table_exists(con, "Users"):
             con.executescript("""
             PRAGMA foreign_keys = ON;
             CREATE TABLE IF NOT EXISTS Users (
               user_id INTEGER PRIMARY KEY,
-              username TEXT NOT NULL UNIQUE COLLATE NOCASE,
-              hashed_password TEXT NOT NULL
+              username TEXT NOT NULL COLLATE NOCASE,
+              email    TEXT,
+              hashed_password TEXT NOT NULL,
+              UNIQUE(username)
             );
+            CREATE UNIQUE INDEX IF NOT EXISTS idx_users_email ON Users(email);
             """)
+        else:
+            # migrations
+            if not _column_exists(con, "Users", "email"):
+                con.execute("ALTER TABLE Users ADD COLUMN email TEXT")
+            con.execute("CREATE UNIQUE INDEX IF NOT EXISTS idx_users_email ON Users(email)")
 
+        # --- Plants ---
         if not _table_exists(con, "Plants"):
             con.executescript("""
             PRAGMA foreign_keys = ON;
             CREATE TABLE IF NOT EXISTS Plants (
               id_plant   INTEGER PRIMARY KEY,
               user_id    INTEGER NOT NULL,
-              email      TEXT NOT NULL UNIQUE NOCASE,
               name       TEXT NOT NULL,
               room       TEXT,
               added      TEXT NOT NULL,     -- 'YYYY-MM-DD'
               watered    TEXT,              -- nullable
               winterval  INTEGER NOT NULL DEFAULT 7 CHECK (winterval > 0),
-              photo      BLOB,              -- optional upload
-              photo_path TEXT,              -- optional stock image path
+              photo      BLOB,
+              photo_path TEXT,
               photo_source TEXT DEFAULT 'upload',
-              photo_mime TEXT,              -- MIME for data: URI
+              photo_mime TEXT,
               FOREIGN KEY (user_id) REFERENCES Users(user_id)
             );
+            CREATE INDEX IF NOT EXISTS idx_plants_user ON Plants(user_id);
             """)
-            con.execute("CREATE INDEX IF NOT EXISTS idx_plants_user ON Plants(user_id)")
         else:
             if not _column_exists(con, "Plants", "photo_path"):
                 con.execute("ALTER TABLE Plants ADD COLUMN photo_path TEXT")
