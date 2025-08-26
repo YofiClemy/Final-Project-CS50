@@ -323,3 +323,32 @@ def healthz():
 if __name__ == "__main__":
     # For local dev only
     app.run(debug=True)
+
+@app.post("/plant/<int:plant_id>/delete")
+@login_required
+def delete_plant(plant_id):
+    db = get_db()
+    db.execute("DELETE FROM Plants WHERE id_plant=? AND user_id=?", (plant_id, session["user_id"]))
+    db.commit()
+    return redirect(url_for("my_plants"))
+
+@app.route("/plant/<int:plant_id>/edit", methods=["GET","POST"])
+@login_required
+def edit_plant(plant_id):
+    db = get_db()
+    row = db.execute(
+        "SELECT * FROM Plants WHERE id_plant=? AND user_id=?", (plant_id, session["user_id"])
+    ).fetchone()
+    if not row: return redirect(url_for("my_plants"))
+    if request.method == "POST":
+        # same parsing and clamping as add_plant
+        # handle photo_mode logic again (upload vs stock)
+        # UPDATE with new values
+        db.execute(
+            "UPDATE Plants SET name=?, room=?, added=?, winterval=?, photo=?, photo_path=?, photo_source=?, photo_mime=? "
+            "WHERE id_plant=? AND user_id=?",
+            (...values..., plant_id, session["user_id"])
+        )
+        db.commit()
+        return redirect(url_for("my_plants"))
+    return render_template("edit_plant.html", plant=dict(row), stock_images=STOCK_IMAGES)
