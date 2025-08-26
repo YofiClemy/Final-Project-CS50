@@ -1,37 +1,52 @@
 {% extends "layout.html" %}
-{% block title %}PlantWeb - Album{% endblock %}
+{% block title %}My Plants · PlantWeb{% endblock %}
 {% block content %}
 <div class="container">
   <h1 class="text-center mb-4">My Plants</h1>
-  <div class="row row-cols-1 row-cols-md-3 g-4">
-    {% for plant in plants %}
-    <div class="col">
-      <div class="card h-100">
-        {% if plant.photo %}
-          <img src="data:image/jpeg;base64,{{ plant.photo }}" class="card-img-top" alt="{{ plant.name }}">
-        {% else %}
-          <img src="{{ url_for('static', filename='default_plant.jpg') }}" class="card-img-top" alt="Default Plant">
-        {% endif %}
-        <div class="card-body">
-          <h5 class="card-title">{{ plant.name }}</h5>
-          <p class="card-text mb-1">Room: {{ plant.room or 'Not specified' }}</p>
-          <p class="card-text mb-1">Added: {{ plant.added }}</p>
-          <p class="card-text mb-1">Last Watered: {{ plant.watered or 'Not yet watered' }}</p>
-          <p class="card-text">
-            Next Watering:
-            <span class="badge {% if plant.days_left is not none and plant.days_left < 0 %}bg-danger{% elif plant.days_left is not none and plant.days_left <= 1 %}bg-warning text-dark{% else %}bg-success{% endif %}">
-              {{ plant.next_watering or 'Water now' }}
-            </span>
-          </p>
-        </div>
-        <div class="card-footer">
-          <form method="post" action="{{ url_for('water', plant_id=plant.id_plant) }}">
-            <button type="submit" class="btn btn-primary w-100">Water Now</button>
-          </form>
+
+  {% if not plants %}
+    <div class="text-center py-5">
+      <img src="{{ url_for('static', filename='empty-plants.svg') }}" alt="No plants yet" width="220" class="mb-3 opacity-75">
+      <h3>No plants yet</h3>
+      <p class="text-muted">Add your first plant to start tracking waterings.</p>
+      <a class="btn btn-primary" href="{{ url_for('add_plant') }}">Add a plant</a>
+    </div>
+  {% else %}
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+      {% for plant in plants %}
+      <div class="col">
+        <div class="card h-100">
+            {% if plant.photo %}
+            <img src="data:image/jpeg;base64,{{ plant.photo }}" class="card-img-top" alt="{{ plant.name }}">
+            {% elif plant.photo_path %}
+            <img src="{{ url_for('static', filename=plant.photo_path) }}" class="card-img-top" alt="{{ plant.name }}">
+            {% else %}
+            <img src="{{ url_for('static', filename='default_plant.jpg') }}" class="card-img-top" alt="Plant">
+            {% endif %}
+          <div class="card-body">
+            <h5 class="card-title">{{ plant.name }}</h5>
+            <p class="card-text mb-1">Room: {{ plant.room or 'Not specified' }}</p>
+            <p class="card-text mb-1">Added: {{ plant.added }}</p>
+            <p class="card-text mb-1">Last watered: {{ plant.watered or 'Not yet' }}</p>
+            <p class="card-text">
+              Next watering:
+              <span class="badge
+                {% if plant.days_left is not none and plant.days_left < 0 %}bg-danger
+                {% elif plant.days_left is not none and plant.days_left <= 1 %}bg-warning text-dark
+                {% else %}bg-success{% endif %}">
+                {{ plant.next_watering }}
+              </span>
+            </p>
+          </div>
+          <div class="card-footer">
+            <form method="post" action="{{ url_for('water', plant_id=plant.id_plant) }}">
+              <button type="submit" class="btn btn-primary w-100">Water now</button>
+            </form>
+          </div>
         </div>
       </div>
+      {% endfor %}
     </div>
-    {% endfor %}
-  </div>
+  {% endif %}
 </div>
 {% endblock %}

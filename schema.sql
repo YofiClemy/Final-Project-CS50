@@ -18,3 +18,4 @@ CREATE TABLE IF NOT EXISTS Plants (
   photo    BLOB,
   FOREIGN KEY (user_id) REFERENCES Users(user_id)
 );
+

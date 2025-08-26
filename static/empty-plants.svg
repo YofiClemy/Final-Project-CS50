@@ -1,0 +1,15 @@
+<!-- static/empty-plants.svg -->
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 64 64" fill="none" role="img" aria-labelledby="t d">
+  <title id="t">No plants yet</title>
+  <desc id="d">Simple pot with stem and two leaves</desc>
+  <!-- Pot -->
+  <path d="M20 42h24l-2 8H22l-2-8Z" fill="#B8E0E0" stroke="#007474" stroke-width="1.5" />
+  <!-- Stem -->
+  <path d="M32 42V24" stroke="#007474" stroke-width="2" stroke-linecap="round" />
+  <!-- Left leaf -->
+  <path d="M26 30c0-4 3-7 6-8 0 4-3 7-6 8Z" fill="#79C9C9" />
+  <!-- Right leaf -->
+  <path d="M38 30c0-4-3-7-6-8 0 4 3 7 6 8Z" fill="#79C9C9" />
+  <!-- Accent dot -->
+  <circle cx="32" cy="50" r="1.2" fill="#007474" />
+</svg>
