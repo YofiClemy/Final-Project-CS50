@@ -7,14 +7,12 @@ Track your houseplants, store photos, and never miss a watering. Built with **Fl
 - Due-date logic: next watering is computed from the last watering or the added date
 - Clean Bootstrap UI with an empty state, badges, and a simple “Water now” action
 
-> **Live demo:** _TBD_ → add your deployed URL here (Render/Railway/Fly.io).  
-> **Docs site:** optional GitHub Pages landing in `index.html`.
+> **Live demo:** https://final-project-cs50.onrender.com 
+> **Docs site:** https://yoficlemy.github.io/Final-Project-CS50/
 
 ---
 
 ## Screenshots
-
-> Put images in `assets/` and link them here, or remove this section.
 
 - Login  
   `assets/login.jpg`
@@ -155,47 +153,6 @@ Dump schema:
 sqlite3 instance/database.db ".schema Plants"
 ```
 
----
-
-## Deployment
-
-You need a real Python host for the Flask app. GitHub Pages is **static only**.  
-Use one of the following:
-
-### Render (clicky UI)
-
-- Create a Web Service from this GitHub repo.
-- **Build Command:** `pip install -r requirements.txt`
-- **Start Command:** `gunicorn -c gunicorn_config.py app:app`
-- Add environment variables:
-  - `SECRET_KEY=change-me`
-  - (optional) `DATABASE_FILE=/opt/render/project/src/instance/database.db`
-- Make sure `gunicorn` is in `requirements.txt`.
-
-### Railway (quick)
-
-- Create a new service from repo.
-- Service variables:
-  - `SECRET_KEY=change-me`
-- **Start Command:** `gunicorn -c gunicorn_config.py app:app`
-
-### Fly.io (CLI)
-
-```bash
-flyctl launch --now    # accept defaults, choose a region
-flyctl secrets set SECRET_KEY=change-me
-flyctl deploy
-```
-
-> Add a `Procfile` if you want Heroku-like parity:
-> ```
-> web: gunicorn -c gunicorn_config.py app:app
-> ```
-
-After deployment, put the URL in this README and on your GitHub Pages landing.
-
----
-
 ## Security Notes
 
 - Passwords are hashed; never store plaintext.
@@ -216,4 +173,4 @@ After deployment, put the URL in this README and on your GitHub Pages landing.
 
 ## License
 
-MIT — see `LICENSE` (or choose a license you prefer).
+MIT — see `LICENSE`
