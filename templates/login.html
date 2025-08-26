@@ -1,62 +1,54 @@
 {% extends "layout.html" %}
-{% block title %}PlantWeb - Login{% endblock %}
+{% block title %}PlantWeb · Login{% endblock %}
 {% block content %}
-<div class="container login-container">
-  <div class="card shadow">
-    <div class="card-body">
-      <!-- Login -->
-      <form id="loginForm" action="{{ url_for('login') }}" method="post">
+<div class="container" style="max-width:680px">
+  <div class="row g-4">
+    <div class="col-md-6">
+      <form id="loginForm" action="{{ url_for('login') }}" method="post" class="card card-body">
+        <h2 class="h4 mb-3">Login</h2>
         <input type="hidden" name="form_type" value="login">
-        <h2 class="card-title text-center mb-4">Login</h2>
+        <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
         <div class="mb-3">
-          <label for="loginUsername" class="form-label">Username</label>
-          <input type="text" class="form-control" id="loginUsername" name="username" required>
+          <label class="form-label" for="loginUsername">Username</label>
+          <input class="form-control" id="loginUsername" name="username" required>
         </div>
         <div class="mb-3">
-          <label for="loginPassword" class="form-label">Password</label>
+          <label class="form-label" for="loginPassword">Password</label>
           <input type="password" class="form-control" id="loginPassword" name="password" required>
         </div>
-        <div class="d-grid">
-          <button type="submit" class="btn btn-primary">Login</button>
+        <div class="form-check mb-3">
+          <input class="form-check-input" type="checkbox" id="remember" name="remember">
+          <label class="form-check-label" for="remember">Remember me for 7 days</label>
         </div>
-        <p class="text-center mt-3">Don't have an account? <a href="#" onclick="toggleForm('register')">Register here</a></p>
+        <button class="btn btn-primary w-100" type="submit">Login</button>
+        {% if error %}<div class="alert alert-danger mt-3">{{ error }}</div>{% endif %}
       </form>
+    </div>
 
-      <!-- Register -->
-      <form id="registerForm" action="{{ url_for('register') }}" method="post" style="display:none;">
+    <div class="col-md-6">
+      <form id="registerForm" action="{{ url_for('register') }}" method="post" class="card card-body">
+        <h2 class="h4 mb-3">Register</h2>
         <input type="hidden" name="form_type" value="register">
-        <h2 class="card-title text-center mb-4">Register</h2>
+        <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
         <div class="mb-3">
-          <label for="registerUsername" class="form-label">Username</label>
-          <input type="text" class="form-control" id="registerUsername" name="username" required>
-        </div>
-        <!-- Optional: email is not used by backend; you can remove or keep it -->
-        <div class="mb-3">
-          <label for="registerEmail" class="form-label">Email</label>
-          <input type="email" class="form-control" id="registerEmail" name="email">
+          <label class="form-label" for="regUsername">Username</label>
+          <input class="form-control" id="regUsername" name="username" required>
         </div>
         <div class="mb-3">
-          <label for="registerPassword" class="form-label">Password</label>
-          <input type="password" class="form-control" id="registerPassword" name="password" required>
+          <label class="form-label" for="regEmail">Email (optional)</label>
+          <input type="email" class="form-control" id="regEmail" name="email" placeholder="you@example.com">
         </div>
         <div class="mb-3">
-          <label for="confirmPassword" class="form-label">Confirm Password</label>
-          <input type="password" class="form-control" id="confirmPassword" name="confirm_password" required>
+          <label class="form-label" for="regPassword">Password</label>
+          <input type="password" class="form-control" id="regPassword" name="password" required>
         </div>
-        <div class="d-grid">
-          <button type="submit" class="btn btn-primary">Register</button>
+        <div class="mb-3">
+          <label class="form-label" for="regConfirm">Confirm password</label>
+          <input type="password" class="form-control" id="regConfirm" name="confirm_password" required>
         </div>
-        <p class="text-center mt-3">Already have an account? <a href="#" onclick="toggleForm('login')">Login here</a></p>
+        <button class="btn btn-success w-100" type="submit">Create account</button>
       </form>
     </div>
   </div>
 </div>
-<script>
-function toggleForm(which){
-  const login = document.getElementById('loginForm');
-  const reg = document.getElementById('registerForm');
-  if(which==='login'){ login.style.display='block'; reg.style.display='none'; }
-  else { login.style.display='none'; reg.style.display='block'; }
-}
-</script>
 {% endblock %}

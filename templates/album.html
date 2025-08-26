@@ -1,4 +1,5 @@
 {% extends "layout.html" %}
+
 {% block title %}My Plants · PlantWeb{% endblock %}
 {% block content %}
 <div class="container">
@@ -16,19 +17,35 @@
       {% for plant in plants %}
       <div class="col">
         <div class="card h-100">
-            {% if plant.photo %}
-            <img src="data:image/jpeg;base64,{{ plant.photo }}" class="card-img-top" alt="{{ plant.name }}">
-            {% elif plant.photo_path %}
-            <img src="{{ url_for('static', filename=plant.photo_path) }}" class="card-img-top" alt="{{ plant.name }}">
-            {% else %}
-            <img src="{{ url_for('static', filename='default_plant.jpg') }}" class="card-img-top" alt="Plant">
-            {% endif %}
+          {% if plant.photo %}
+            <img
+              src="data:{{ plant.photo_mime }};base64,{{ plant.photo }}"
+              class="card-img-top" alt="{{ plant.name }}"
+              loading="lazy" decoding="async"
+              width="640" height="480"
+              style="aspect-ratio:4/3;object-fit:cover">
+          {% elif plant.photo_path %}
+            <img
+              src="{{ url_for('static', filename=plant.photo_path) }}"
+              class="card-img-top" alt="{{ plant.name }}"
+              loading="lazy" decoding="async"
+              width="640" height="480"
+              style="aspect-ratio:4/3;object-fit:cover">
+          {% else %}
+            <img
+              src="{{ url_for('static', filename='default_plant.jpg') }}"
+              class="card-img-top" alt="Plant"
+              loading="lazy" decoding="async"
+              width="640" height="480"
+              style="aspect-ratio:4/3;object-fit:cover">
+          {% endif %}
+
           <div class="card-body">
             <h5 class="card-title">{{ plant.name }}</h5>
             <p class="card-text mb-1">Room: {{ plant.room or 'Not specified' }}</p>
             <p class="card-text mb-1">Added: {{ plant.added }}</p>
             <p class="card-text mb-1">Last watered: {{ plant.watered or 'Not yet' }}</p>
-            <p class="card-text">
+            <p class="card-text mb-0">
               Next watering:
               <span class="badge
                 {% if plant.days_left is not none and plant.days_left < 0 %}bg-danger
@@ -38,8 +55,10 @@
               </span>
             </p>
           </div>
+
           <div class="card-footer">
             <form method="post" action="{{ url_for('water', plant_id=plant.id_plant) }}">
+              <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
               <button type="submit" class="btn btn-primary w-100">Water now</button>
             </form>
           </div>

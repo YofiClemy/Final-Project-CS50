@@ -1,4 +1,4 @@
-from flask import Flask, g, redirect, render_template, session, request, url_for
+from flask import Flask, g, redirect, render_template, session, request, url_for, abort
 from functools import wraps
 from flask_session import Session
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -8,6 +8,7 @@ import base64
 import os
 from PIL import Image, UnidentifiedImageError
 from io import BytesIO
+import secrets, hmac
 
 # ---------- Stock image whitelist ----------
 STOCK_IMAGES = {
@@ -22,6 +23,7 @@ STOCK_IMAGES = {
 # ---------- App & config ----------
 app = Flask(__name__)
 app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", os.urandom(24))
+app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(days=7)
 
 # 2 MB upload cap
 app.config["MAX_CONTENT_LENGTH"] = 2 * 1024 * 1024
@@ -30,7 +32,7 @@ app.config["MAX_CONTENT_LENGTH"] = 2 * 1024 * 1024
 app.config.update(
     SESSION_COOKIE_HTTPONLY=True,
     SESSION_COOKIE_SAMESITE="Lax",
-    SESSION_COOKIE_SECURE=False,  # set True in production behind HTTPS
+    SESSION_COOKIE_SECURE = True if os.environ.get("RENDER") else False
 )
 
 # Ensure instance folder exists (db, sessions, etc.)
@@ -41,6 +43,28 @@ app.config["SESSION_TYPE"] = "filesystem"
 app.config["SESSION_FILE_DIR"] = os.path.join(app.instance_path, "flask_session")
 os.makedirs(app.config["SESSION_FILE_DIR"], exist_ok=True)
 Session(app)
+
+
+SAFE_METHODS = {"GET", "HEAD", "OPTIONS"}
+
+@app.before_request
+def ensure_csrf_token():
+    # give every session a token
+    if "csrf_token" not in session:
+        session["csrf_token"] = secrets.token_urlsafe(32)
+
+# csrf protection
+@app.before_request
+def csrf_protect():
+    if request.method in SAFE_METHODS:
+        return
+    # allow static files etc.
+    if request.endpoint in (None, "static",):
+        return
+    token_session = session.get("csrf_token")
+    token_form = request.form.get("csrf_token") or request.headers.get("X-CSRF-Token")
+    if not token_session or not token_form or not hmac.compare_digest(token_session, token_form):
+        abort(400)  # Bad Request
 
 # SQLite DB path (defaults to instance/database.db)
 DB_PATH = os.environ.get("DATABASE_FILE") or os.path.join(app.instance_path, "database.db")
@@ -89,6 +113,7 @@ def ensure_schema_bootstrap():
             CREATE TABLE IF NOT EXISTS Plants (
               id_plant   INTEGER PRIMARY KEY,
               user_id    INTEGER NOT NULL,
+              email      TEXT NOT NULL UNIQUE NOCASE,
               name       TEXT NOT NULL,
               room       TEXT,
               added      TEXT NOT NULL,     -- 'YYYY-MM-DD'
@@ -157,6 +182,8 @@ def login():
     session.clear()
     if request.method == "POST":
         form_type = request.form.get("form_type")
+        remember = request.form.get("remember") == "on"
+        session.permanent = bool(remember)
         if form_type == "login":
             username = request.form.get("username", "").strip()
             password = request.form.get("password", "")
@@ -175,6 +202,7 @@ def register():
         form_type = request.form.get("form_type")
         if form_type == "register":
             username = request.form.get("username", "").strip()
+            email = request.form.get("email","").strip()
             password = request.form.get("password", "")
             confirm_password = request.form.get("confirm_password", "")
 
@@ -185,8 +213,9 @@ def register():
 
             hashed_password = generate_password_hash(password)
             db = get_db()
-            try:
-                db.execute("INSERT INTO Users (username, hashed_password) VALUES (?, ?)", (username, hashed_password))
+            try:                
+                db.execute("INSERT INTO Users (username, email, hashed_password) VALUES (?, ?, ?)",
+                (username, email, hashed_password))
                 db.commit()
                 user = db.execute("SELECT * FROM Users WHERE username = ?", (username,)).fetchone()
                 session["user_id"] = user["user_id"]

@@ -1,193 +1,219 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-bs-theme="light">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>PlantWeb | CS50 Final Project</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PlantWeb · Watering tracker</title>
   <meta name="description" content="PlantWeb helps you track houseplants and never miss a watering. CS50 final project by Clément Chevauchey." />
   <meta property="og:title" content="PlantWeb | CS50 Final Project" />
   <meta property="og:description" content="Track plant waterings with login, photos, and next-watering logic." />
   <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://<your-username>.github.io/<your-repo>/" />
-  <meta name="theme-color" content="#00a4a4" />
+  <meta property="og:url" content="https://github.com/YofiClemy/Final-Project-CS50/tree/main" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
   <style>
-    :root{
-      --bg: #0f1115;
-      --bg2:#151821;
-      --fg: #e9eef3;
-      --muted:#b7c2cc;
+    :root {
       --brand:#00a4a4;
-      --card:#171b24;
-      --edge:#222836;
-      --link:#8ad9d9;
-      --warn:#d4a017;
-      --bad:#d65c5c;
-      --good:#3fa77b;
+      --brand-dark:#008a8a;
     }
-    *{box-sizing:border-box}
-    html,body{margin:0;padding:0;background:var(--bg);color:var(--fg);font:16px/1.6 system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,"Helvetica Neue",Arial}
-    a{color:var(--link);text-decoration:none}
-    a:hover{text-decoration:underline}
-    header{position:sticky;top:0;z-index:10;background:linear-gradient(180deg,var(--bg) 0%,rgba(15,17,21,.96) 70%,rgba(15,17,21,0) 100%);backdrop-filter:saturate(160%) blur(8px);border-bottom:1px solid rgba(255,255,255,.06)}
-    .nav{max-width:1024px;margin:0 auto;display:flex;gap:16px;align-items:center;justify-content:space-between;padding:12px 20px}
-    .brand{display:flex;gap:10px;align-items:center;color:#fff;text-decoration:none}
-    .brand-logo{width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,var(--brand),#007474)}
-    .brand-title{font-weight:700;letter-spacing:.2px}
-    .nav a.btn{padding:8px 12px;border:1px solid var(--edge);border-radius:10px;background:var(--bg2)}
-    .hero{max-width:1024px;margin:34px auto 0;padding:24px 20px 10px;display:grid;grid-template-columns:1.4fr 1fr;gap:28px}
-    .hero h1{margin:.2rem 0 1rem;font-size:clamp(28px,4vw,40px);line-height:1.15}
-    .hero p{margin:0;color:var(--muted)}
-    .cta{display:flex;gap:12px;flex-wrap:wrap;margin-top:16px}
-    .btn{display:inline-block;padding:10px 14px;border-radius:12px;border:1px solid var(--edge);background:var(--brand);color:#061013;font-weight:700}
-    .btn.secondary{background:var(--bg2);color:var(--fg)}
-    .grid{max-width:1024px;margin:0 auto;padding:20px}
-    .section{margin:28px 0;padding:18px;border:1px solid var(--edge);border-radius:16px;background:var(--card)}
-    .section h2{margin:.2rem 0 1rem;font-size:clamp(22px,3vw,28px)}
-    .features{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
-    .card{padding:14px;border:1px solid var(--edge);border-radius:12px;background:var(--bg2)}
-    .kpi{display:inline-block;padding:2px 8px;border-radius:999px;background:#0d131a;border:1px solid var(--edge);color:var(--muted);font-size:.85rem}
-    pre{margin:0;background:#0d131a;border:1px solid var(--edge);border-radius:12px;overflow:auto}
-    code{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;font-size:.92rem}
-    .code{padding:14px}
-    .gallery{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
-    .shot{border:1px solid var(--edge);border-radius:12px;overflow:hidden;background:#0d131a}
-    .shot img{display:block;width:100%;height:auto}
-    footer{max-width:1024px;margin:12px auto 40px;padding:0 20px;color:var(--muted)}
-    .bad{color:var(--bad)} .warn{color:var(--warn)} .good{color:var(--good)}
-    @media (max-width:860px){.hero{grid-template-columns:1fr}}
-
-    /* Accessibility: ensure anchor-buttons are readable on dark backgrounds */
-    a.btn, a.btn:link, a.btn:visited { color: #ffffff !important; text-decoration: none; }
-    a.btn:hover, a.btn:focus { filter: brightness(1.08); text-decoration: none; }
-    a.btn:focus-visible { outline: 2px solid #ffffff; outline-offset: 2px; }
-
-    /* High-contrast GitHub button variant */
-    .btn.github { background: #000000; color: #ffffff !important; border-color: #2b2b2b; }
-    .btn.github:hover { filter: none; background: #111111; }
+    .btn-brand {
+      --bs-btn-bg: var(--brand);
+      --bs-btn-border-color: var(--brand);
+      --bs-btn-hover-bg: var(--brand-dark);
+      --bs-btn-hover-border-color: var(--brand-dark);
+      --bs-btn-color: #fff;
+    }
+    .hero {
+      padding: 72px 0 32px;
+      background: radial-gradient(1200px 500px at 10% -10%, rgba(0,164,164,.15), transparent);
+    }
+    .screenshot {
+      border-radius: 12px;
+      border: 1px solid rgba(0,0,0,.08);
+      width: 100%;
+      height: auto;
+      box-shadow: 0 6px 24px rgba(0,0,0,.08);
+    }
+    footer {
+      margin-top: 40px;
+      padding: 24px 0;
+      background: var(--brand);
+      color: #fff;
+    }
+    .btn-contrast {
+      color: #000 !important;
+      background: #fff !important;
+      border: 1px solid #000 !important;
+    }
+    [data-bs-theme="dark"] .btn-contrast {
+      color: #fff !important;
+      background: transparent !important;
+      border: 1px solid #fff !important;
+    }
+    .theme-switcher { position: fixed; bottom: 20px; right: 20px; }
+    .section-title { scroll-margin-top: 80px; }
   </style>
 </head>
 <body>
-  <header>
-    <nav class="nav">
-      <a class="brand" href="#">
-        <span class="brand-logo" aria-hidden="true"></span>
-        <span class="brand-title">PlantWeb</span>
+  <nav class="navbar navbar-expand-md" style="border-bottom:1px solid rgba(0,0,0,.06)">
+    <div class="container">
+      <a class="navbar-brand fw-semibold" href="#">
+        <img src="{{ url_for('static', filename='logo.png') }}" alt="PlantWeb" width="28" height="28" class="me-2">
+        PlantWeb
       </a>
-      <div>
-        <a class="btn secondary" href="#features">Features</a>
-        <a class="btn secondary" href="#install">Run locally</a>
-        <a class="btn github" href="https://github.com/<your-username>/<your-repo>" target="_blank" rel="noopener">View on GitHub</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div id="nav" class="collapse navbar-collapse">
+        <ul class="navbar-nav ms-auto align-items-md-center gap-2">
+          <li class="nav-item"><a class="nav-link" href="#screenshots">Screenshots</a></li>
+          <li class="nav-item"><a class="nav-link" href="#about">About</a></li>
+          <li class="nav-item"><a class="btn btn-contrast" href="https://github.com/YofiClemy/Final-Project-CS50"><i class="bi bi-github me-1"></i> View on GitHub</a></li>
+          <li class="nav-item"><a class="btn btn-brand" href="https://final-project-cs50.onrender.com/"><i class="bi bi-box-arrow-up-right me-1"></i> Live demo</a></li>
+        </ul>
       </div>
-    </nav>
+    </div>
+  </nav>
+
+  <header class="hero">
+    <div class="container">
+      <div class="row align-items-center g-4">
+        <div class="col-lg-6">
+          <h1 class="display-5 fw-bold">Never forget to water your plants</h1>
+          <p class="lead text-muted">
+            A Flask app to track plants with photos, and watering schedules. Choose a stock image
+            or upload your own, then mark “Water now” when you actually do it.
+          </p>
+          <div class="d-flex gap-2">
+            <a class="btn btn-brand btn-lg" href="https://final-project-cs50.onrender.com/">Open the demo</a>
+            <a class="btn btn-outline-secondary btn-lg" href="https://github.com/YofiClemy/Final-Project-CS50">Browse code</a>
+          </div>
+          <p class="small text-muted mt-3 mb-0">
+            Hashed passwords · Server-side sessions · CSRF protection · Lazy-loaded images
+          </p>
+        </div>
+        <div class="col-lg-6">
+          <img class="screenshot" src="assets/album.jpg" alt="Album screenshot"
+               loading="lazy" decoding="async" width="960" height="640"
+               style="aspect-ratio:3/2;object-fit:cover">
+        </div>
+      </div>
+    </div>
   </header>
 
-  <main>
-    <section class="hero">
-      <div>
-        <h1>Never forget to water your plants again</h1>
-        <p>Track plants, compute next watering dates automatically, and attach photos for growth history. Built with Flask and SQLite as a CS50 final project.</p>
-        <div class="cta">
-          <a class="btn" href="#demo">Live demo</a>
-          <a class="btn secondary" href="#install">Install</a>
+  <main class="container my-5">
+    <div class="row g-4">
+      <div class="col-md-4">
+        <div class="card h-100">
+          <div class="card-body">
+            <h3 class="h5"><i class="bi bi-images me-2"></i> Stock or upload</h3>
+            <p class="text-muted mb-0">Pick from a built-in stock library under <code>static/stock/</code> or upload a photo. Uploads are resized server-side to fast thumbnails.</p>
+          </div>
         </div>
-        <p style="margin-top:12px"><span class="kpi">Auth</span> <span class="kpi">Image uploads</span> <span class="kpi">Server-side sessions</span></p>
       </div>
-      <div class="shot" aria-label="App screenshot placeholder">
-        <!-- Replace with your actual screenshot -->
-        <img src="assets/screenshot-hero.jpg" alt="PlantWeb dashboard" />
+      <div class="col-md-4">
+        <div class="card h-100">
+          <div class="card-body">
+            <h3 class="h5"><i class="bi bi-calendar-check me-2"></i> Smart schedule</h3>
+            <p class="text-muted mb-0">Next watering is computed from the last watering or the added date, with badges for overdue, due soon, or fine.</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card h-100">
+          <div class="card-body">
+            <h3 class="h5"><i class="bi bi-shield-lock me-2"></i> Sensible security</h3>
+            <p class="text-muted mb-0">Hashed passwords, server-side sessions, and CSRF tokens on all POST forms. Cookies set with secure flags in production.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Screenshots -->
+    <section id="screenshots" class="mt-5">
+      <h2 class="h4 mb-3 section-title">Screenshots</h2>
+      <div class="row g-3">
+        <div class="col-md-6">
+          <figure class="figure w-100">
+            <img class="figure-img img-fluid rounded border" src="assets/album.jpg" alt="Album page" loading="lazy" decoding="async" width="960" height="640" style="aspect-ratio:3/2;object-fit:cover">
+            <figcaption class="figure-caption">Album view with stock and uploaded images.</figcaption>
+          </figure>
+        </div>
+        <div class="col-md-6">
+          <figure class="figure w-100">
+            <img class="figure-img img-fluid rounded border" src="assets/add-plant.jpg" alt="Add plant form" loading="lazy" decoding="async" width="960" height="640" style="aspect-ratio:3/2;object-fit:cover">
+            <figcaption class="figure-caption">Add plant: upload or choose from library.</figcaption>
+          </figure>
+        </div>
+        <div class="col-md-6">
+          <figure class="figure w-100">
+            <img class="figure-img img-fluid rounded border" src="assets/login.jpg" alt="Login and register" loading="lazy" decoding="async" width="960" height="640" style="aspect-ratio:3/2;object-fit:cover">
+            <figcaption class="figure-caption">Login & register on a single page.</figcaption>
+          </figure>
+        </div>
+        <div class="col-md-6">
+          <figure class="figure w-100">
+            <img class="figure-img img-fluid rounded border" src="assets/empty-state.jpg" alt="Empty state" loading="lazy" decoding="async" width="960" height="640" style="aspect-ratio:3/2;object-fit:cover">
+            <figcaption class="figure-caption">Empty state encouraging first plant.</figcaption>
+          </figure>
+        </div>
       </div>
     </section>
 
-    <div class="grid">
-      <section id="features" class="section">
-        <h2>Features</h2>
-        <div class="features">
-          <div class="card">
-            <strong>Login & Register</strong>
-            <p>Create an account, hashed passwords, session-based auth.</p>
-          </div>
-          <div class="card">
-            <strong>Plant album</strong>
-            <p>Store name, room, dates, interval, and optional photo per plant.</p>
-          </div>
-          <div class="card">
-            <strong>Next watering logic</strong>
-            <p>Due dates computed from last watering or added date. Badges show status.</p>
-          </div>
-          <div class="card">
-            <strong>Simple deployment</strong>
-            <p>Works locally with Flask. Can be containerized or deployed to a PaaS.</p>
-          </div>
-        </div>
-      </section>
-
-      <section id="demo" class="section">
-        <h2>Demo</h2>
-        <p>Video walkthrough: <a href="https://youtu.be/<your-video-id>" target="_blank" rel="noopener">YouTube link</a></p>
-        <!-- Or embed:
-        <div class="shot">
-          <iframe width="100%" height="360" src="https://www.youtube.com/embed/<your-video-id>" title="PlantWeb demo" frameborder="0" allowfullscreen></iframe>
-        </div>
-        -->
-      </section>
-
-      <section id="install" class="section">
-        <h2>Run locally</h2>
-        <div class="card">
-          <div class="code">
-            <pre><code># 1) Create and activate a virtualenv
-python3 -m venv .venv
-source .venv/bin/activate  # Windows: .venv\Scripts\activate
-
-# 2) Install dependencies
-pip install -r requirements.txt
-
-# 3) Initialize the SQLite database
-sqlite3 database.db &lt; schema.sql
-
-# 4) Run
-export SECRET_KEY="change-me"
-flask --app app run  # http://127.0.0.1:5000
-</code></pre>
-          </div>
-        </div>
-        <p class="warn" style="margin-top:10px">Tip: keep <code>database.db</code> and <code>flask_session/</code> out of git. Add them to <code>.gitignore</code>.</p>
-      </section>
-
-      <section id="screens" class="section">
-        <h2>Screenshots</h2>
-        <div class="gallery">
-          <div class="shot"><img src="assets/login.jpg" alt="Login page" /></div>
-          <div class="shot"><img src="assets/album.jpg" alt="Album view" /></div>
-          <div class="shot"><img src="assets/add.jpg" alt="Add plant form" /></div>
-        </div>
-      </section>
-
-      <section id="tech" class="section">
-        <h2>Tech stack</h2>
-        <ul>
-          <li>Python Flask, Jinja templates</li>
-          <li>SQLite with server-side sessions</li>
-          <li>Plain CSS, no heavy frameworks</li>
-        </ul>
-      </section>
-
-      <section id="about" class="section">
-        <h2>About</h2>
-        <p>CS50x final project by <strong>Clément Chevauchey</strong>. Source available on GitHub.</p>
-        <p>Feedback and issues welcome via the repository’s Issues tab.</p>
-      </section>
-    </div>
+    <!-- About -->
+    <section id="about" class="mt-5">
+      <h2 class="h4 mb-3 section-title">About PlantWeb</h2>
+      <p class="text-muted">
+        PlantWeb is a compact Flask app built for the CS50 - HarvardX final project. It tracks plants, photos, and watering schedules.
+        Features include server-side sessions, CSRF protection, and image normalization for fast page loads. Data is stored
+        in SQLite and the schema auto-migrates for small changes like optional email. Deploy-friendly on Render.
+      </p>
+      <ul class="text-muted">
+        <li>Add plants with an uploaded photo or a stock image from <code>static/stock/</code></li>
+        <li>Thumbnails generated with Pillow; album images are lazy-loaded with fixed dimensions</li>
+        <li>“Water now” updates the last-watered date; badges highlight due/overdue</li>
+        <li>Minimal CSRF guard and secure cookies in production</li>
+      </ul>
+      <div class="d-flex gap-2">
+        <a class="btn btn-brand" href="https://final-project-cs50.onrender.com/"><i class="bi bi-lightning-charge me-1"></i> Try the live demo</a>
+        <a class="btn btn-outline-secondary" href="https://github.com/YofiClemy/Final-Project-CS50"><i class="bi bi-code-slash me-1"></i> See the code</a>
+      </div>
+    </section>
   </main>
 
   <footer>
-    <hr style="border:0;border-top:1px solid var(--edge)" />
-    <p>© <span id="y"></span> PlantWeb. MIT License.</p>
+    <div class="container d-flex flex-wrap justify-content-between align-items-center gap-2">
+      <p class="mb-0">© {{ site.time | date: "%Y" }} Chevauchey Clément</p>
+      <div class="d-flex flex-wrap gap-2">
+        <a class="btn btn-sm btn-contrast" href="https://github.com/YofiClemy/Final-Project-CS50"><i class="bi bi-github me-1"></i> GitHub</a>
+        <a class="btn btn-sm btn-contrast" href="https://final-project-cs50.onrender.com/">Live demo</a>
+        <a class="btn btn-sm btn-contrast" href="LICENSE">MIT License</a>
+        <a class="btn btn-sm btn-contrast" href="#about">About</a>
+        <a class="btn btn-sm btn-contrast" href="#screenshots">Screenshots</a>
+      </div>
+    </div>
   </footer>
 
+  <div class="theme-switcher">
+    <button class="btn btn-outline-secondary" id="themeBtn" title="Toggle theme">
+      <i class="bi bi-moon-fill" id="themeIcon"></i>
+    </button>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
   <script>
-    // tiny year updater
-    document.getElementById('y').textContent = new Date().getFullYear();
+    function setTheme(next) {
+      document.documentElement.setAttribute('data-bs-theme', next);
+      localStorage.setItem('theme', next);
+      const icon = document.getElementById('themeIcon');
+      icon.classList.toggle('bi-moon-fill', next !== 'dark');
+      icon.classList.toggle('bi-sun-fill',  next === 'dark');
+    }
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    setTheme(savedTheme);
+    document.getElementById('themeBtn').addEventListener('click', () => {
+      setTheme(document.documentElement.getAttribute('data-bs-theme') === 'dark' ? 'light' : 'dark');
+    });
   </script>
 </body>
 </html>

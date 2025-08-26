@@ -1,94 +1,86 @@
 {% extends "layout.html" %}
-{% block title %}Add a Plant · PlantWeb{% endblock %}
+{% block title %}Add Plant · PlantWeb{% endblock %}
 {% block content %}
-<div class="container" style="max-width:820px">
-  <h1 class="mb-3">Add a Plant</h1>
-  {% if error %}<div class="alert alert-danger">{{ error }}</div>{% endif %}
+<div class="container" style="max-width:720px">
+  <h1 class="mb-4">Add a plant</h1>
 
-  <form method="post" enctype="multipart/form-data" class="card p-3 shadow-sm">
-    <div class="mb-3">
-      <label class="form-label" for="name">Name</label>
-      <input class="form-control" id="name" name="name" required placeholder="Ficus lyrata">
-    </div>
+  {% if error %}
+    <div class="alert alert-danger">{{ error }}</div>
+  {% endif %}
 
-    <div class="mb-3">
-      <label class="form-label" for="room">Room</label>
-      <input class="form-control" id="room" name="room" placeholder="Living room">
+  <form method="post" enctype="multipart/form-data" class="vstack gap-3">
+    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+
+    <div class="row g-3">
+      <div class="col-md-6">
+        <label class="form-label">Name</label>
+        <input class="form-control" name="name" required>
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">Room</label>
+        <input class="form-control" name="room" placeholder="Kitchen, Living room…">
+      </div>
     </div>
 
     <div class="row g-3">
-      <div class="col-sm-6">
-        <label class="form-label" for="added">Date added</label>
-        <input class="form-control" id="added" type="date" name="added">
+      <div class="col-md-6">
+        <label class="form-label">Added on</label>
+        <input class="form-control" type="date" name="added" value="{{ date.today().isoformat() }}">
       </div>
-      <div class="col-sm-6">
-        <label class="form-label" for="winterval">Water every (days)</label>
-        <input class="form-control" id="winterval" type="number" name="winterval" min="1" value="7">
+      <div class="col-md-6">
+        <label class="form-label">Watering interval (days)</label>
+        <input class="form-control" type="number" name="winterval" min="1" max="365" value="7">
       </div>
     </div>
 
-    <hr class="my-4">
-
-    <!-- Simple mode selector -->
-    <div class="mb-3">
-      <label class="form-label" for="photo_mode">Image source</label>
-      <select id="photo_mode" name="photo_mode" class="form-select">
-        <option value="upload" selected>Upload my own image</option>
-        <option value="stock">Choose from image library</option>
-      </select>
+    <div>
+      <label class="form-label d-block">Image source</label>
+      <div class="form-check form-check-inline">
+        <input class="form-check-input" type="radio" name="photo_mode" id="pmUpload" value="upload" checked>
+        <label class="form-check-label" for="pmUpload">Upload</label>
+      </div>
+      <div class="form-check form-check-inline">
+        <input class="form-check-input" type="radio" name="photo_mode" id="pmStock" value="stock">
+        <label class="form-check-label" for="pmStock">Choose from library</label>
+      </div>
     </div>
 
-    <!-- Upload pane -->
-    <div id="pane-upload" class="mb-3">
-      <label class="form-label" for="photo">Photo (optional)</label>
-      <input class="form-control" id="photo" type="file" name="photo" accept="image/*">
-      <small class="text-muted">Max 2 MB.</small>
+    <div id="uploadWrap">
+      <label class="form-label">Upload a photo (2 MB max)</label>
+      <input class="form-control" type="file" name="photo" accept="image/*">
     </div>
 
-    <!-- Stock pane -->
-    <div id="pane-stock" class="mb-3" style="display:none">
-      <p class="mb-2">Pick an image:</p>
-      <div class="row row-cols-2 row-cols-md-3 g-3">
-        {% for key, path in (stock_images or {}).items() %}
-        <div class="col">
-          <label class="w-100">
-            <input class="form-check-input me-2 stock-radio" type="radio" name="stock_key" value="{{ key }}">
-            <img src="{{ url_for('static', filename=path) }}" alt="{{ key }}" style="width:100%;height:auto;border-radius:10px;border:1px solid #dee2e6;">
-            <div class="small text-muted text-capitalize mt-1">{{ key.replace('_',' ') }}</div>
-          </label>
-        </div>
+    <div id="stockWrap" class="d-none">
+      <label class="form-label">Choose a stock image</label>
+      <select class="form-select" name="stock_key">
+        <option value="" selected disabled>Pick one…</option>
+        {% for key, path in stock_images.items() %}
+          <option value="{{ key }}">{{ key|replace('_',' ')|title }}</option>
         {% endfor %}
-      </div>
-      {% if not stock_images %}
-        <div class="alert alert-warning mt-3">No stock images configured. Add files under <code>static/stock/</code> and define <code>STOCK_IMAGES</code> in <code>app.py</code>.</div>
-      {% endif %}
+      </select>
+      <p class="form-text">Images are served from <code>static/stock/</code>.</p>
     </div>
 
-    <div class="d-flex gap-2 mt-3">
-      <button type="submit" class="btn btn-primary">Save plant</button>
+    <div class="d-flex gap-2">
+      <button class="btn btn-primary" type="submit">Save plant</button>
       <a class="btn btn-outline-secondary" href="{{ url_for('my_plants') }}">Cancel</a>
     </div>
   </form>
 </div>
 
 <script>
-  // No dependency on Bootstrap JS
-  const mode = document.getElementById('photo_mode');
-  const paneUpload = document.getElementById('pane-upload');
-  const paneStock = document.getElementById('pane-stock');
-  const stockRadios = () => Array.from(document.querySelectorAll('.stock-radio'));
+  const pmUpload = document.getElementById('pmUpload');
+  const pmStock  = document.getElementById('pmStock');
+  const uploadWrap = document.getElementById('uploadWrap');
+  const stockWrap  = document.getElementById('stockWrap');
 
-  function togglePanes(){
-    const m = mode.value;
-    const useStock = m === 'stock';
-    paneUpload.style.display = useStock ? 'none' : '';
-    paneStock.style.display  = useStock ? '' : 'none';
-    // require a stock choice only when stock mode is active
-    stockRadios().forEach(r => r.required = useStock);
-    // also make file input required only in upload mode if you want (currently optional):
-    // document.getElementById('photo').required = !useStock;
+  function syncMode(){
+    const stock = pmStock.checked;
+    stockWrap.classList.toggle('d-none', !stock);
+    uploadWrap.classList.toggle('d-none', stock);
   }
-  mode.addEventListener('change', togglePanes);
-  togglePanes(); // initial
+  pmUpload.addEventListener('change', syncMode);
+  pmStock.addEventListener('change', syncMode);
+  syncMode();
 </script>
 {% endblock %}
