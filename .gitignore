@@ -1,8 +1,16 @@
-# .gitignore
+# OS junk
+.DS_Store
+
+# Python
 __pycache__/
 *.pyc
-.DS_Store
-.env
+*.pyo
+
+# Virtualenv
+.venv/
+venv/
+
+# SQLite db and app state
 *.db
 instance/
 flask_session/
