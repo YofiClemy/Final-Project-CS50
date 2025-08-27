@@ -27,6 +27,7 @@ app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(days=7)
 
 # 2 MB upload cap
 app.config["MAX_CONTENT_LENGTH"] = 2 * 1024 * 1024
+app.config["SEND_FILE_MAX_AGE_DEFAULT"] = 86400
 
 # Session cookie hygiene
 app.config.update(
@@ -66,6 +67,11 @@ def csrf_protect():
 @app.errorhandler(400)
 def bad_request(e):
     return render_template("400.html", error="Bad request (likely CSRF). Please reload and try again."), 400
+
+
+@app.context_processor
+def inject_today():
+    return {"today_iso": date.today().isoformat()}
 
 # SQLite DB path (defaults to instance/database.db)
 DB_PATH = os.environ.get("DATABASE_FILE") or os.path.join(app.instance_path, "database.db")
