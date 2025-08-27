@@ -18,8 +18,10 @@ Track your houseplants, store photos, and never miss a watering. Built with **Py
 
 <p align="center">
   <a href="https://youtu.be/434FBv_-nKc" target="_blank" rel="noopener noreferrer">
-    <img src="https://img.youtube.com/vi/434FBv_-nKc/hqdefault.jpg"
-         alt="PlantWeb – demo video" width="720">
+    <img
+      src="https://img.youtube.com/vi/434FBv_-nKc/hqdefault.jpg"
+      alt="PlantWeb – demo video"
+      width="360" height="202" />
   </a>
 </p>
 ---
