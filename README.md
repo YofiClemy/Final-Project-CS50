@@ -18,11 +18,11 @@ Track your houseplants, store photos, and never miss a watering. Built with **Py
 ## Screenshots
 
 - Login  
-  `assets/login.jpg`
+  ![Login](assets/login.png)
 - Album  
-  `assets/album.jpg`
+  ![Album](assets/my_plants.jpeg)
 - Add Plant  
-  `assets/add.jpg`
+  ![Add plant](assets/add_plant.png)
 
 ## Features
 

@@ -1,16 +1,47 @@
 # OS junk
 .DS_Store
+Thumbs.db
+
+# Editors/IDE
+.vscode/
+.idea/
+*.swp
 
 # Python
 __pycache__/
-*.pyc
+*.py[cod]
+*.so
+*.pyd
 *.pyo
-
-# Virtualenv
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
 .venv/
 venv/
 
-# SQLite db and app state
+# Env files
+.env
+.env.*
+
+# Build/dist
+dist/
+build/
+
+# SQLite
 *.db
+*.sqlite
+*.sqlite3
+*.db-wal
+*.db-shm
+*.sqlite-wal
+*.sqlite-shm
+
+# App state (database, server-side sessions live under instance/)
 instance/
-flask_session/
+
+# Just in case for debug
+!static/logo.png
+!static/default_plant.jpg
+!static/empty-plants.svg
+!static/stock/**

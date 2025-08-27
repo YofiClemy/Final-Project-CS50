@@ -47,24 +47,25 @@ Session(app)
 
 SAFE_METHODS = {"GET", "HEAD", "OPTIONS"}
 
-@app.before_request
-def ensure_csrf_token():
-    # give every session a token
+@app.context_processor
+def inject_csrf():
+    # make a token available to all templates as {{ csrf_token }}
     if "csrf_token" not in session:
         session["csrf_token"] = secrets.token_urlsafe(32)
+    return {"csrf_token": session["csrf_token"]}
 
-# csrf protection
 @app.before_request
 def csrf_protect():
-    if request.method in SAFE_METHODS:
-        return
-    # allow static files etc.
-    if request.endpoint in (None, "static",):
-        return
-    token_session = session.get("csrf_token")
-    token_form = request.form.get("csrf_token") or request.headers.get("X-CSRF-Token")
-    if not token_session or not token_form or not hmac.compare_digest(token_session, token_form):
-        abort(400)  # Bad Request
+    if request.method in ("POST", "PUT", "PATCH", "DELETE"):
+        session_token = session.get("csrf_token")
+        sent_token = request.form.get("csrf_token") or request.headers.get("X-CSRF-Token")
+        if not session_token or not sent_token or not secrets.compare_digest(session_token, sent_token):
+            app.logger.warning("CSRF failed on %s (have=%s, sent=%s)", request.path, bool(session_token), bool(sent_token))
+            abort(400)
+
+@app.errorhandler(400)
+def bad_request(e):
+    return render_template("400.html", error="Bad request (likely CSRF). Please reload and try again."), 400
 
 # SQLite DB path (defaults to instance/database.db)
 DB_PATH = os.environ.get("DATABASE_FILE") or os.path.join(app.instance_path, "database.db")
