@@ -14,6 +14,11 @@ Track your houseplants, store photos, and never miss a watering. Built with **Py
 **Repo:** https://github.com/YofiClemy/Final-Project-CS50
 
 ---
+## Video demo
+
+[![Watch the demo](https://img.youtube.com/vi/434FBv_-nKc/hqdefault.jpg)](https://youtu.be/434FBv_-nKcD)
+
+---
 
 ## Screenshots
 
