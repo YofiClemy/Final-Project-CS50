@@ -1,5 +1,18 @@
-# PlantWeb
-
+<h1 align="center">PlantWeb - CS50 Final Project</h1>
+<p align="center">
+  <a href="https://yoficlemy.github.io/Final-Project-CS50/" target="_blank" rel="noopener noreferrer">
+    <img alt="Project Page"
+         src="https://img.shields.io/badge/Page-Project-1f77b4?style=flat&labelColor=555">
+  </a>
+  <a href="https://final-project-cs50.onrender.com/" target="_blank" rel="noopener noreferrer">
+    <img alt="Live Demo"
+         src="https://img.shields.io/badge/Live-Demo-f97316?style=flat&labelColor=555">
+  </a>
+  <a href="https://github.com/YofiClemy/Final-Project-CS50/releases/latest" target="_blank" rel="noopener noreferrer">
+    <img alt="Latest Release"
+         src="https://img.shields.io/github/v/release/YofiClemy/Final-Project-CS50?display_name=tag&color=10b981&label=Release&style=flat&labelColor=555">
+  </a>
+</p>
 Track your houseplants, store photos, and never miss a watering. Built with **Python**, **Flask** and **SQLite** for a CS50 final project.
 
 - Add plants with either an uploaded image or a stock image from `static/stock/`
@@ -13,27 +26,15 @@ Track your houseplants, store photos, and never miss a watering. Built with **Py
 **Live demo:** https://final-project-cs50.onrender.com/
 **Repo:** https://github.com/YofiClemy/Final-Project-CS50
 
----
 ## Video demo
 
-<p align="center">
-  <a href="https://youtu.be/434FBv_-nKc" target="_blank" rel="noopener noreferrer">
-    <img
-      src="https://img.youtube.com/vi/434FBv_-nKc/hqdefault.jpg"
-      alt="PlantWeb – demo video"
-      width="360" height="202" />
-  </a>
-</p>
----
+[Watch on YouTube](https://youtu.be/434FBv_-nKc)
 
 ## Screenshots
-
-- Login  
-  ![Login](assets/login.png)
-- Album  
-  ![Album](assets/my_plants.jpeg)
-- Add Plant  
-  ![Add plant](assets/add_plant.png)
+  
+![Login](assets/login.png)  
+![Album](assets/my_plants.jpeg)
+![Add plant](assets/add_plant.png)
 
 ## Features
 
@@ -51,8 +52,6 @@ Track your houseplants, store photos, and never miss a watering. Built with **Py
 - **Security:** CSRF tokens on every POST form; HTTPOnly, SameSite=Lax cookies; Secure cookies in production.
 - **Schema bootstrap:** SQLite schema is created and lightly migrated at startup (adds missing columns like `email`, `photo_*`).
 - **Health check:** `/healthz` endpoint for deployments.
-
----
 
 ## Tech Stack
 
@@ -90,8 +89,6 @@ Track your houseplants, store photos, and never miss a watering. Built with **Py
 
 `instance/` is created automatically and should be **gitignored**.
 
----
-
 ## Quickstart (Local)
 
 Requirements: Python 3.11+
@@ -110,8 +107,6 @@ Prefer manual init?
 ```bash
 sqlite3 instance/database.db < schema.sql
 ```
-
----
 
 ## Configuration
 
@@ -135,8 +130,6 @@ app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(days=7)
 session.permanent = request.form.get("remember") == "on"
 ```
 
----
-
 ## Stock Image Library
 
 1. Put JPG/PNG files into `static/stock/` (keep them small, e.g., ≤ 200 KB).
@@ -157,8 +150,6 @@ STOCK_IMAGES = {
 
 Album display prefers: Uploaded photo → Stock image → Default placeholder.
 
----
-
 ## CSRF Protection
 
 A minimal CSRF guard is active for all non-GET requests. Include the token in every POST form:
@@ -171,8 +162,6 @@ For `fetch()` calls, send it as a header:
 ```js
 fetch("/water/123", { method:"POST", headers:{"X-CSRF-Token":"{{ session.csrf_token }}"} });
 ```
-
----
 
 ## Database & Migrations
 
@@ -188,8 +177,6 @@ CREATE UNIQUE INDEX IF NOT EXISTS idx_users_email ON Users(email);
 
 `schema.sql` reflects the same structure.
 
----
-
 ## Security Notes
 
 - **Password hashing:** Credentials are hashed with Werkzeug’s PBKDF2; plaintext is never stored.
@@ -199,8 +186,6 @@ CREATE UNIQUE INDEX IF NOT EXISTS idx_users_email ON Users(email);
 - **DB safety:** All SQL uses parameterized queries; `PRAGMA foreign_keys=ON` is enabled; index on `Plants(user_id)` for isolation and performance.
 - **Secrets & data at rest:** `SECRET_KEY` must be provided via environment. The `instance/` directory (sessions, SQLite file) is not committed to git.
 - **Known limitations (future hardening):** no email verification or password reset flow; no rate-limiting or lockout; no 2FA; no content security policy tuning. Add these if you keep it public beyond a class demo.
-
----
 
 ## CS50 “Distinctiveness and Complexity”
 
@@ -212,8 +197,6 @@ CREATE UNIQUE INDEX IF NOT EXISTS idx_users_email ON Users(email);
 - **UI/UX polish:** Clean Bootstrap 5 templates, empty-state screen, dark/light theme toggle, accessible forms.
 - **Deployment realism:** gunicorn config, health check endpoint, secure cookie settings, and environment-based config; guidance for durable storage on a hosted platform.
 
----
-
 ## Requirements
 
 ```
@@ -224,9 +207,6 @@ gunicorn==22.0.0
 Pillow==10.4.0
 python-dotenv==1.0.1   # optional for local .env
 ```
-
----
-
 ## License
 
 MIT — see `LICENSE`
