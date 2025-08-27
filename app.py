@@ -121,6 +121,8 @@ def ensure_schema_bootstrap():
             if not _column_exists(con, "Users", "email"):
                 con.execute("ALTER TABLE Users ADD COLUMN email TEXT")
             con.execute("CREATE UNIQUE INDEX IF NOT EXISTS idx_users_email ON Users(email)")
+        # normalize blank emails to NULL so UNIQUE(email) doesn't collide on ""
+        con.execute("UPDATE Users SET email=NULL WHERE email IS NOT NULL AND TRIM(email)=''")
 
         # --- Plants ---
         if not _table_exists(con, "Plants"):
@@ -216,27 +218,60 @@ def register():
     if request.method == "POST":
         form_type = request.form.get("form_type")
         if form_type == "register":
-            username = request.form.get("username", "").strip()
-            email = request.form.get("email","").strip()
-            password = request.form.get("password", "")
-            confirm_password = request.form.get("confirm_password", "")
+            username = (request.form.get("username") or "").strip()
+            password = request.form.get("password") or ""
+            confirm  = request.form.get("confirm_password") or ""
+            email_in = (request.form.get("email") or "").strip()
+            email    = email_in or None  # <-- crucial: store NULL, not ""
 
             if not username or not password:
                 return render_template("login.html", error="Username and password required")
-            if password != confirm_password:
+            if password != confirm:
                 return render_template("login.html", error="Passwords do not match")
 
-            hashed_password = generate_password_hash(password)
+            hashed = generate_password_hash(password)
             db = get_db()
-            try:                
-                db.execute("INSERT INTO Users (username, email, hashed_password) VALUES (?, ?, ?)",
-                (username, email, hashed_password))
-                db.commit()
-                user = db.execute("SELECT * FROM Users WHERE username = ?", (username,)).fetchone()
-                session["user_id"] = user["user_id"]
-                return redirect(url_for("my_plants"))
-            except sqlite3.IntegrityError:
+
+            # Pre-checks so we return accurate messages
+            taken = db.execute(
+                "SELECT 1 FROM Users WHERE username = ? COLLATE NOCASE",
+                (username,)
+            ).fetchone()
+            if taken:
                 return render_template("login.html", error="Username already exists")
+
+            if email is not None:
+                email_taken = db.execute(
+                    "SELECT 1 FROM Users WHERE email = ?",
+                    (email,)
+                ).fetchone()
+                if email_taken:
+                    return render_template("login.html", error="Email already registered")
+
+            try:
+                db.execute(
+                    "INSERT INTO Users (username, email, hashed_password) VALUES (?, ?, ?)",
+                    (username, email, hashed)
+                )
+                db.commit()
+            except sqlite3.IntegrityError as e:
+                # Belt-and-suspenders in case of race conditions
+                msg = (str(e) or "").lower()
+                if "users.username" in msg or "idx_users_username" in msg:
+                    err = "Username already exists"
+                elif "users.email" in msg:
+                    err = "Email already registered"
+                else:
+                    err = "Could not create account"
+                return render_template("login.html", error=err)
+
+            user = db.execute(
+                "SELECT user_id FROM Users WHERE username = ? COLLATE NOCASE",
+                (username,)
+            ).fetchone()
+            session["user_id"] = user["user_id"]
+            return redirect(url_for("my_plants"))
+
     return render_template("login.html")
 
 @app.route("/add_plant", methods=["GET", "POST"])
